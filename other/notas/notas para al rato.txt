@@ -1,0 +1,5 @@
+Uso FTP y no sabía que wget usa eso, quieren que lo optimice con eso o ya lo dejo así? 
+El sql se mantendría en AWS para mandar el script de una y levantarla en el S3
+Qué resolución vamos a tomar? Resoluciones muy pequeñas (4km y Copernicus) nos dan mucha info, pero cómo lo agrupamos?
+
+ALFONSO: preguntas de mapas/resolución/arribos-puertos
