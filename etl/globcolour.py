@@ -1,21 +1,68 @@
+import csv
+import os
+import re
+from datetime import datetime, timedelta
+from typing import Dict, List, Tuple
+
+import configparser
+import pandas as pd
 from ftplib import FTP
-import os 
-from datetime import datetime
+import xarray as xr
 
-variable_dict = {
-    "normalised_fluorescence_line_height":"__GLOB_RESOLUTION_AV-MOD_NFLH_DAY_00",
-    "particulate_organic_carbon":"__GLOB_RESOLUTION_AVW-MODVIR_POC_DAY_00",
-    "particulate_inorganic_carbon":"__GLOB_RESOLUTION_AVW-MODVIR_PIC_DAY_00",
+def read_variable_dict(filename: str) -> Dict[str, str]:
+    """
+    Reads the variable dictionary from a CSV file and returns it as a dictionary.
+    The CSV file should have a "variable" column and a "file_format" column.
+
+    Args:
+        filename: A string indicating the name of the CSV file to be read.
+
+    Returns:
+        A dictionary mapping variable names to their corresponding file formats.
+
+    """
+    with open(filename, 'r') as f:
+        reader = csv.DictReader(f)
+        variable_dict = {row['variable']: row['file_format'] for row in reader}
+    return variable_dict
+
+
+def read_credentials() -> List[str]:
+    """
+    Reads credentials for globcolour from the config.ini file.
+
+    Returns:
+        A list of strings containing the username and password for the FTP server.
+
+    """
+    config = configparser.ConfigParser()
+    config.read('config/config.ini')
+
+    username = config.get('api_keys', 'user_gc')
+    password = config.get('api_keys', 'password_gc')
     
-}
+    return [username, password]
 
-directory = "C:\\Users\\javi2\\Documents\\CD_aplicada_1\\COBI\\data\\simar\\"
+def daterange(start_date: datetime, end_date: datetime):
+    """
+    Generator that yields dates within a given range.
 
-credentials = ['ftp_gc_JOrcazas_Leal', 'JOrcazas_Leal_6463']
+    Args:
+        start_date: A datetime object representing the start date of the range.
+        end_date: A datetime object representing the end date of the range.
 
-def download_raw(variable, directory_to, resolution, credentials, variable_dict, year_from):
+    Yields:
+        A datetime object representing a date within the given range.
+
+    """
+    for n in range(int((end_date - start_date).days)):
+        yield start_date + timedelta(n)
+
+def download_raw(variable: str, directory_to: str, resolution: str, 
+                 credentials: List[str], variable_dict: Dict[str, str], date_to_download: str) -> List[Tuple[int, int, int]]:
     
-    """Downloads data from the GlobColour site using FTP.
+    """
+    Downloads data from the GlobColour site using FTP.
 
     Retrieves daily files (of whole years beginning at from_year) from GlobColour through FTP;
     saves them in a given directory without processing them.
@@ -23,11 +70,11 @@ def download_raw(variable, directory_to, resolution, credentials, variable_dict,
 
     Args:
         variable: A string indicating the variable to retrieve.
-        directory: A string indicating the directory where the files will be stored.
-        resolution: 
-        credentials:
-        variable_dict:
-        from_year: An int indicating the start year of the retrieval.        
+        directory_to: A string indicating the directory where the files will be stored.
+        resolution: A string indicating the resolution of the data to be downloaded.
+        credentials: A list of strings containing the username and password for the FTP server.
+        variable_dict: A dictionary mapping variable names to their corresponding file formats.
+        date_to_download: A string indicating the date of the file to be retrieved, in format YYYYmmdd.
 
 
     Returns:
@@ -41,15 +88,10 @@ def download_raw(variable, directory_to, resolution, credentials, variable_dict,
         such as (xxxx,02,30), (xxxx,04,31), etc. 
 
     """
-    years = list(range(year_from, datetime.now().year+1))
-    months = ["01","02","03","04","05","06","07","08","09","10","11","12"]
-    days = ["01","02","03","04","05","06","07","08","09","10","11","12", "13","14","15",
-            "16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"]
-
     user = credentials[0] 
     password = credentials[1] 
 
-    directory_path = directory_to + variable
+    directory_path = os.path.join(directory_to, variable)# PENDIENTE: usar join en lugar de esto porque puede quedar directory-pathvariable y no directory_path/variable
     if not os.path.isdir(directory_path):
         os.mkdir(directory_path)
     
@@ -58,40 +100,62 @@ def download_raw(variable, directory_to, resolution, credentials, variable_dict,
     
     filematch = 'L3m_*'+variable_dict[variable].replace("RESOLUTION", resolution)+'.nc' # a match for any file in this case, can be changed or left for user to input
     
-    not_loaded = []
     
-    for year in years:
-        for month in months:
-            for day in days:
-                try:                    
-                    download_dir ="GLOB/merged/day/"+str(year)+"/"+month+"/"+day+"/" #dir i want to download files from, can be changed or left for user input
-                    ftp = FTP("ftp.hermes.acri.fr")
-                    ftp.login(user,password)
-                    
-                    ftp.cwd(download_dir)
-                    for filename in ftp.nlst(filematch): # Loop - looking for matching files
-                        if not os.path.exists(filename):
-                            fhandle = open(filename, 'wb')
-        #                     print('Getting ' + filename) #for confort sake, shows the file that's being retrieved
-                            ftp.retrbinary('RETR ' + filename, fhandle.write)
-                            fhandle.close()
-                        
-                    ftp.quit()
-                except Exception as e:
-                    not_loaded.append((year, month, day, e))
-                    print("error in variable", variable,":", e, str(year)+str(month)+str(day))
+    year = date_to_download[:4]
+    month = date_to_download[4:6]
+    day = date_to_download[6:]
 
-    return not_loaded
+    try:                    
+        download_dir ="GLOB/merged/day/"+year+"/"+month+"/"+day+"/" #dir i want to download files from, can be changed or left for user input
+        ftp = FTP("ftp.hermes.acri.fr")
+        ftp.login(user,password)
 
-def globcolour_cleansing(variable, directory_from, directory_to, coordinates=[-116, -113, 26, 29]):
+        ftp.cwd(download_dir)
+        for filename in ftp.nlst(filematch): # Loop - looking for matching files
+            if not os.path.exists(filename):
+                fhandle = open(filename, 'wb')
+                # print('Getting ' + filename) #for confort sake, shows the file that's being retrieved
+                ftp.retrbinary('RETR ' + filename, fhandle.write)
+                fhandle.close()
+                return filename  + " for variable " + variable + " succesfully retrieved"
+
+        ftp.quit()
+
         
-    directory_path = directory_to + variable + "_clean"
+        
+
+    except Exception as e:
+        return "error in variable " + variable + ": " + str(e) + "; " + year+month+day
+
+    
+
+def process_data(variable: str, directory_from: str, directory_to: str, coordinates: List[float] = [-116, -113, 26, 29]) -> None:
+
+    """
+    Performs data cleansing on NetCDF files for a given variable obtained from a directory directory_from. 
+    It extracts data within a specified latitude and longitude range coordinates and saves the cleaned data in 
+    a new directory directory_to with the file extension .csv.
+
+    Args:
+        variable (string): the name of the variable to be cleaned
+        directory_from (string): the path of the directory containing the original files
+        directory_to (string): the path of the directory where the cleaned files will be saved
+        coordinates (list, optional): a list of four values that specify the range of coordinates to be considered. The default value is [-116, -113, 26, 29].
+
+    Returns:
+        This function does not return any value. It only saves the cleaned files in a new directory.
+
+    """
+        
+    directory_path = os.path.join(directory_to, variable)
+    
     if not os.path.isdir(directory_path):
         os.mkdir(directory_path)
     os.chdir(directory_path) #changes the active dir - this is where downloaded files will be saved to
     
         
-    directory = directory_from+variable
+    directory = os.path.join(directory_from, variable)
+    
     try:
         for filename in os.listdir(directory):
             f = os.path.join(directory, filename)
@@ -117,7 +181,6 @@ def globcolour_cleansing(variable, directory_from, directory_to, coordinates=[-1
                 obs.to_csv(filename.replace(".nc", "_clean.csv"))
 
             except Exception as e:
-                print("Error con:", filename, e)
+                print("Error con:", filename, e) #PENDIENTE: quitar prints
     except Exception as e:
-        #borrar esa exception cuando ya estén todas las variables
         print(e)
