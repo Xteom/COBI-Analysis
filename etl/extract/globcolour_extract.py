@@ -77,13 +77,17 @@ def main():
     parent_dir = os.path.dirname(script_dir)
 
     # Construct a relative file path to the data directory
+    if not os.path.isdir(os.path.join(parent_dir, 'data', 'globcolour')):
+        os.mkdir(os.path.join(parent_dir, 'data', 'globcolour'))
+    if not os.path.isdir(os.path.join(parent_dir, 'data', 'globcolour', 'raw')):
+        os.mkdir(os.path.join(parent_dir, 'data', 'globcolour', 'raw'))
+
     directory_to = os.path.join(parent_dir, 'data', 'globcolour', 'raw')
+
 
     for resolution in ["100", "25", "4"]:
         for variable in variable_dict.keys():
             directory = os.path.join(directory_to, variable)
-            
-            print(directory_to,"\n", variable,"\n", directory)
             print(download_files_with_missing_dates(dates_to_download, directory, variable, directory_to, resolution, credentials, variable_dict))
 
 

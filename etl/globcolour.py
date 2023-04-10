@@ -91,7 +91,7 @@ def download_raw(variable: str, directory_to: str, resolution: str,
     user = credentials[0] 
     password = credentials[1] 
 
-    directory_path = os.path.join(directory_to, variable)# PENDIENTE: usar join en lugar de esto porque puede quedar directory-pathvariable y no directory_path/variable
+    directory_path = os.path.join(directory_to, variable)
     if not os.path.isdir(directory_path):
         os.mkdir(directory_path)
     

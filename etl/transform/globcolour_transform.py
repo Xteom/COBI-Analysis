@@ -20,7 +20,14 @@ def main():
     directory_from = os.path.join(parent_dir, 'data', 'globcolour', 'raw')
 
     # Construct a relative file path to the data directory
+    if not os.path.isdir(os.path.join(parent_dir, 'data', 'globcolour')):
+        os.mkdir(os.path.join(parent_dir, 'data', 'globcolour'))
+    if not os.path.isdir(os.path.join(parent_dir, 'data', 'globcolour', 'processed')):
+        os.mkdir(os.path.join(parent_dir, 'data', 'globcolour', 'processed'))
+
     directory_to = os.path.join(parent_dir, 'data', 'globcolour', 'processed')
+    
+    
 
     variable_dict = read_variable_dict('input/variable_dict.csv')
 

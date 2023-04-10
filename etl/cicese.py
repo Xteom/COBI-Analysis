@@ -4,6 +4,7 @@ import os
 import glob
 from datetime import datetime
 
+# PENDIENTE: formato
 def gather_cicese_data(year_from, directory_to, location="isla_cedros"):
     location_dict = {"isla_cedros":"ICDN", "guerrero_negro":"GRON"}
     
