@@ -1,1 +1,0 @@
-CICESE: cada cuánto actualizan? no se puede subir a Github la base de sensores de CICESE, se mantiene en local

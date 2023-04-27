@@ -1,4 +1,0 @@
-pandas
-plotnine
-plotly
-seaborn
