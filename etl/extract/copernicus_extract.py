@@ -20,13 +20,9 @@ def main():
 
         # Construct a relative file path to the data directory
 
-        if not os.path.isdir(os.path.join(parent_dir, 'data', 'copernicus')):
-            os.mkdir(os.path.join(parent_dir, 'data', 'copernicus'))
-        if not os.path.isdir(os.path.join(parent_dir, 'data', 'copernicus', 'raw')):
-            os.mkdir(os.path.join(parent_dir, 'data', 'copernicus', 'raw'))
-
         directory_to = os.path.join(parent_dir, 'data', 'copernicus', 'raw')
-
+        if not os.path.isdir(directory_to):
+            os.makedirs(directory_to, exist_ok=True)
 
         output_name = "test.nc"
 
