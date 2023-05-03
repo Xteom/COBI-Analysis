@@ -19,7 +19,10 @@ def gather_cicese_data(year_from, directory_to, location="isla_cedros"):
     df = pd.DataFrame()
     
     # We set the directory where we will download the data
-    directory_path = directory_to + location
+    if not os.path.isdir(directory_to):
+        os.mkdir(directory_to)
+    
+    directory_path = os.path.join(directory_to, location)
     if not os.path.isdir(directory_path):
         os.mkdir(directory_path)
 
