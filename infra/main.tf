@@ -11,6 +11,11 @@ resource "aws_s3_bucket" "COBI_landing_zone_2023" {
   acl    = "private"
 }
 
+resource "aws_s3_bucket" "COBI_input_data_2023" {
+  bucket = "COBI-input-data-2023"
+  acl    = "private"
+}
+
 resource "aws_s3_bucket" "COBI_clean_data_2023" {
   bucket = "COBI-clean-data-2023"
   acl    = "private"
