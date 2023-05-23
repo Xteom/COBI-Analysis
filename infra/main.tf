@@ -16,3 +16,14 @@ resource "aws_s3_bucket" "COBI_clean_data_2023" {
   acl    = "private"
 }
 
+resource "aws_s3_bucket" "COBI_athena_results_2023" {
+  bucket = "COBI-athena-results-2023"
+  acl    = "private"
+}
+
+resource "aws_s3_bucket" "COBI_model_2023" {
+  bucket = "COBI-model-2023"
+  acl    = "private"
+}
+
+
