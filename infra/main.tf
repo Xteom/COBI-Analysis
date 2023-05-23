@@ -26,4 +26,10 @@ resource "aws_s3_bucket" "COBI_model_2023" {
   acl    = "private"
 }
 
-
+resource "aws_lambda_function" "copernicus_extract" {
+  filename = copernicus_extract.zip
+  function_name = "copernicus_extract"
+  role = aws_iam_role.lambda_exec.arn
+  handler = "copernicus_extract.lambda_handler"
+  runtime = "python3.8"
+}
