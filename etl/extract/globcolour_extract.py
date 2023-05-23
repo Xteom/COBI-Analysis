@@ -28,7 +28,6 @@ def get_dates_from_filenames(directory: str) -> Set[str]:
     return dates
 
 
-# MODIFICAR PARA QUE LEA LAS FECHAS DIRECTAMENTE DEL S3 O SQL QUE GUARDA LOS DATOS YA LIMPIOS
 def download_files_with_missing_dates(dates_to_download: set, directory: str, variable: str, directory_to: str, 
                                      resolution: str, credentials: list, variable_dict: dict) -> list:
     """
@@ -64,7 +63,7 @@ def download_files_with_missing_dates(dates_to_download: set, directory: str, va
 
 def main():
 
-    variable_dict = read_variable_dict('input/variable_dict.csv')
+    variable_dict = read_variable_dict('input/variable_dict_globcolour.csv')
     credentials = read_credentials()
     start_date = date(2017, 1, 1)
     end_date = date(datetime.now().year, datetime.now().month, datetime.now().day-1)
@@ -84,13 +83,12 @@ def main():
     if not os.path.isdir(directory_to):
             os.makedirs(directory_to, exist_ok=True)
 
-    for resolution in ["100", "25", "4"]:
+    for resolution in ["4"]: #["4", "25", "100"]
         for variable in variable_dict.keys():
             directory = os.path.join(directory_to, variable)
             if not os.path.isdir(directory):
                 os.makedirs(directory, exist_ok=True)
 
-            
             print(download_files_with_missing_dates(dates_to_download, directory, variable, directory_to, resolution, credentials, variable_dict))
 
 

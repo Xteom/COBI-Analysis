@@ -1,6 +1,6 @@
 from typing import List
 import configparser
-
+import pandas as pd
 
 
 class MotuOptions:
@@ -31,6 +31,11 @@ def read_credentials() -> List[str]:
     password = config.get('api_keys', 'password_cop')
     
     return [username, password]
+
+def read_variable_dict(filename):
+
+    return pd.read_csv(filename)
+
 
 
 
