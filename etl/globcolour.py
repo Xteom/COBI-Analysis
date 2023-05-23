@@ -114,7 +114,7 @@ def download_raw(variable: str, directory_to: str, resolution: str,
         for filename in ftp.nlst(filematch): # Loop - looking for matching files
             if not os.path.exists(filename):
                 fhandle = open(filename, 'wb')
-                # print('Getting ' + filename) #for confort sake, shows the file that's being retrieved
+                print('Getting ' + filename) #for confort sake, shows the file that's being retrieved
                 ftp.retrbinary('RETR ' + filename, fhandle.write)
                 fhandle.close()
                 return filename  + " for variable " + variable + " succesfully retrieved"

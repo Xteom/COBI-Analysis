@@ -11,7 +11,7 @@ def main():
     # PENDIENTE: pasar a limpio, hacer un loop por todas las estaciones
 
     gather_cicese_data(2021, directory_to=directory_to, location="guerrero_negro")
-    gather_cicese_data(2021, directory_to=directory_to, location="isla_cedros")
+    # gather_cicese_data(2021, directory_to=directory_to, location="isla_cedros")
 
 if __name__ == '__main__':
     main()

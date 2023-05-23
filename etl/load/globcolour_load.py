@@ -10,7 +10,7 @@ from globcolour import read_variable_dict
 
 
 # PENDIENTE
-for variable in read_variable_dict("variable_dict.csv").keys():
+for variable in read_variable_dict("variable_dict_globcolour.csv").keys():
     
         try:
             # Get the absolute path to the directory containing the current script
