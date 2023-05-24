@@ -1,8 +1,6 @@
 import glob
-import pandas as pd
 import xarray as xr
 import os
-import psycopg2
 
 # PENDIENTE: pasar en limpio bien
 
