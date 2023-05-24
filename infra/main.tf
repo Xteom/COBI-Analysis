@@ -31,6 +31,11 @@ resource "aws_s3_bucket" "COBI_model_2023" {
   acl    = "private"
 }
 
+resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
+  bucket = "COBI-lambda-layers-2023"
+  acl    = "private"
+}
+
 resource "aws_lambda_function" "copernicus_extract" {
   filename = copernicus_extract.zip
   function_name = "copernicus_extract"
