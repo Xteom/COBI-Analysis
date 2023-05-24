@@ -159,8 +159,3 @@ resource "aws_s3_bucket_object" "escuela_object" {
   key    = "./glue_jobs/escuelas_dim.py"  
   source = "./glue_code/escuelas_dim.py"  
 }
-
-
-
-
-##
