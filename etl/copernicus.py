@@ -33,10 +33,21 @@ def read_credentials() -> List[str]:
     
     return [username, password]
 
-def read_variable_dict(filename):
+def read_variable_list(file_path):
+# Create an empty list to store the dictionaries
+    dict_list = []
 
-    return pd.read_csv(filename)
+    # Read the CSV file
+    with open(file_path, 'r') as csv_file:
+        reader = csv.DictReader(csv_file)
+        
+        # Iterate over each row in the CSV file
+        for row in reader:
+            # Append the row dictionary to the list
+            dict_list.append(row)
 
+    # Return the list of dictionaries
+    return dict_list
 
 def create_request(service_id, product_id, date, motu, directory_to, name, user, password):
     '''
