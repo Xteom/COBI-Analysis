@@ -1,33 +1,14 @@
 from motu_utils import motu_api
 import motuclient
-from datetime import datetime
 import os
 
 
-from copernicus import read_credentials, MotuOptions, read_variable_dict
+from copernicus import read_credentials, MotuOptions, read_variable_list, create_request
 
-def create_dict(service_id, product_id, date, motu, directory_to, name, user, password):
-    
-    return {"service_id": service_id,
-            "product_id": product_id,
-            "date_min": datetime.strptime('2017-01-01', '%Y-%m-%d').date(),
-            "date_max": datetime.strptime(date, '%Y-%m-%d').date(),
-            "longitude_min": -116.,
-            "longitude_max": -113.,
-            "latitude_min": 26.,
-            "latitude_max": 29.,
-            "variable": [],
-            "motu": motu,
-            "out_dir": directory_to,
-            "out_name": name+".nc",
-            "auth_mode": "cas",
-            "user": user,
-            "pwd": password
-            }
 
 def main():
 
-    dict_variables = read_variable_dict("input/variable_dict_copernicus.csv")
+    dict_variables = read_variable_list("input/variable_dict_copernicus.csv")
 
     for _, row in dict_variables.iterrows():
         row['name'], row['service_id']
@@ -50,7 +31,7 @@ def main():
 
             credentials = read_credentials()
 
-            data_request_options_dict_manual = create_dict(row["service_id"],
+            data_request_options_dict_manual = create_request(row["service_id"],
                                                            row["product_id"],
                                                            date,
                                                            row["motu"],
