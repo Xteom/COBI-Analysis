@@ -34,7 +34,15 @@ def read_credentials() -> List[str]:
     return [username, password]
 
 def read_variable_list(file_path):
-# Create an empty list to store the dictionaries
+    '''
+    Reads the CSV file with the list of variables to download from the Copernicus API.	
+    
+    file_path (str): Path to the CSV file with the list of variables to download from the Copernicus API.
+    Returns: 
+        a list of dictionaries, each one containing the information of a row in the CSV file.
+    '''
+
+    # Create an empty list to store the dictionaries
     dict_list = []
 
     # Read the CSV file
