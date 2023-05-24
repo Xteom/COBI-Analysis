@@ -2,12 +2,11 @@ import glob
 import xarray as xr
 import os
 
-# PENDIENTE: pasar en limpio bien
 
 input_dir = os.path.join(os.getcwd(),"data","copernicus", "raw")
 destination_dir = os.path.join(os.getcwd(),"data","copernicus", "processed")
 
-def to_csv(input_dir=input_dir,
+def nc_to_csv(input_dir=input_dir,
            destination_dir=destination_dir):
     
     for filename in os.listdir(input_dir):
