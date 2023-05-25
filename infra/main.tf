@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
 
 # upload Copernicus variable dictionary to S3
 resource "aws_s3_bucket_object" "copernicus_var_dict" {
-  bucket = aws_s3_bucket.COBI_landing_zone_2023.id
+  bucket = aws_s3_bucket.COBI_input_data_2023.id
   key    = "copernicus_var_dict.csv" #path to the csv file
   source = "./input_data/copernicus_var_dict.csv" #path to the csv file
 }
