@@ -2,6 +2,7 @@ provider "aws" {
   region  = "us-east-2"
 }
 
+# S3 Buckets
 resource "aws_s3_bucket" "COBI_landing_zone_2023" {
   bucket = "cobi-landing-zone-2023"
   acl    = "private"
@@ -31,6 +32,7 @@ resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
   bucket = "cobi-lambda-layers-2023"
   acl    = "private"
 }
+###
 
 # upload Copernicus variable dictionary to S3
 resource "aws_s3_bucket_object" "copernicus_var_dict" {
@@ -38,6 +40,7 @@ resource "aws_s3_bucket_object" "copernicus_var_dict" {
   key    = "copernicus_var_dict.csv" #path to the csv file
   source = "./input_data/copernicus_var_dict.csv" #path to the csv file
 }
+###
 
 # upload Lambda layers to S3
 resource "aws_s3_bucket_object" "layer_requests" {
@@ -49,7 +52,8 @@ resource "aws_s3_bucket_object" "layer_requests" {
 resource "aws_s3_bucket_object" "layer_xarray" {
   bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
   key    = "layer_xarray.zip" #path to the zip file
-  source = "./lambda_layers/layer_xarray.zip" #path to the zip file
+  #source = "./lambda_layers/layer_xarray/python.zip" #path to the zip file
+  source = "./lambda-layer.zip"
 }
 
 resource "aws_s3_bucket_object" "layer_motu" {
@@ -57,6 +61,13 @@ resource "aws_s3_bucket_object" "layer_motu" {
   key    = "layer_motu.zip" #path to the zip file
   source = "./lambda_layers/layer_motu.zip" #path to the zip file
 }
+
+resource "aws_s3_bucket_object" "layer_numpy" {
+  bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
+  key    = "layer_numpy.zip" #path to the zip file
+  source = "./lambda_layers/layer_numpy/python.zip" #path to the zip file
+}
+
 ###
 
 # create Lambda layers
@@ -86,7 +97,17 @@ resource "aws_lambda_layer_version" "layer_motu" {
   description = "Python layer for x86_64 architecture and Python 3.8"
 
 }
+
+resource "aws_lambda_layer_version" "layer_numpy" {
+  layer_name = "layer_numpy"
+  s3_bucket  = "cobi-lambda-layers-2023"
+  s3_key = "layer_numpy.zip"
+  compatible_runtimes = ["python3.8"]
+  description = "Python layer for x86_64 architecture and Python 3.8"
+  
+}
 ###
+
 
 
 
