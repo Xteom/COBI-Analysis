@@ -80,10 +80,11 @@ def create_request(service_id, product_id, date, motu, directory_to, name, user,
     year = str_date[:4]
     month = str_date[5:7]
     last_month = f'{int(month) - 1:02}' 
+    
     return {"service_id": service_id,
             "product_id": product_id,
             "date_min": datetime.strptime(f'{year}-{last_month}-01', '%Y-%m-%d').date(),
-            "date_max": date,
+            "date_max": date.date(),
             "longitude_min": -116.,
             "longitude_max": -113.,
             "latitude_min": 26.,
@@ -97,7 +98,7 @@ def create_request(service_id, product_id, date, motu, directory_to, name, user,
             "pwd": password
             }
 file_path=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-destination_path=os.path.join(file_path, 'data', 'copernicus', 'raw')
+destination_path=os.path.join(file_path,'etl', 'data', 'copernicus', 'raw', 'last_month')
 
 def make_request(credentials,
                  file_path=file_path, 
