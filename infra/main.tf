@@ -32,6 +32,13 @@ resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
   acl    = "private"
 }
 
+# upload Copernicus variable dictionary to S3
+resource "aws_s3_bucket_object" "copernicus_var_dict" {
+  bucket = aws_s3_bucket.COBI_landing_zone_2023.id
+  key    = "copernicus_var_dict.csv" #path to the csv file
+  source = "./input_data/copernicus_var_dict.csv" #path to the csv file
+}
+
 # upload Lambda layers to S3
 resource "aws_s3_bucket_object" "layer_requests" {
   bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
@@ -50,6 +57,7 @@ resource "aws_s3_bucket_object" "layer_motu" {
   key    = "layer_motu.zip" #path to the zip file
   source = "./lambda_layers/layer_motu.zip" #path to the zip file
 }
+###
 
 # create Lambda layers
 resource "aws_lambda_layer_version" "layer_requests" {
@@ -78,7 +86,7 @@ resource "aws_lambda_layer_version" "layer_motu" {
   description = "Python layer for x86_64 architecture and Python 3.8"
 
 }
-
+###
 
 
 
