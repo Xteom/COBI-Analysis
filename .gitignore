@@ -3,3 +3,11 @@
 *.ini
 my_path.py
 
+infra/historical_copernicus/BioGeoChemicalOptics.csv
+infra/historical_copernicus/Plankton.csv
+infra/historical_copernicus/Reflectance.csv
+infra/historical_copernicus/Transparence.csv
+.gitignore
+infra/historical_copernicus/TotalSurfaceaAnd15mCurrent.csv
+infra/historical_copernicus/SeaSurfaceTemperature.csv
+infra/historical_copernicus/WaveHeight.csv
