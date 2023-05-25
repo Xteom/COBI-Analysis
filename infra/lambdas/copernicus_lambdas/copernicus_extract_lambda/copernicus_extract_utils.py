@@ -3,7 +3,7 @@ import configparser
 from datetime import datetime
 import os
 import csv
-from motu_util import motu_api
+from motu_utils import motu_api
 import motuclient
 
 class MotuOptions:
