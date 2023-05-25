@@ -104,7 +104,7 @@ resource "aws_lambda_layer_version" "layer_requests" {
 #   compatible_runtimes = ["python3.8"]
 #   description = "Python layer for x86_64 architecture and Python 3.8"
   
-}
+# }
 ###
 
 # Lambdas
