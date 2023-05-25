@@ -34,6 +34,50 @@ resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
 }
 ###
 
+# upload Copernicus historical data to S3
+resource "aws_s3_bucket_object" "BioGeoChemicalOptics" {
+  bucket = aws_s3_bucket.COBI_clean_data_2023.id
+  key    = "BioGeoChemicalOptics.csv" #path to the csv file
+  source = "./historical_copernicus/BioGeoChemicalOptics.csv" #path to the csv file
+}
+
+resource "aws_s3_bucket_object" "Plankton" {
+  bucket = aws_s3_bucket.COBI_clean_data_2023.id
+  key    = "Plankton.csv" #path to the csv file
+  source = "./historical_copernicus/Plankton.csv" #path to the csv file
+}
+
+resource "aws_s3_bucket_object" "Reflectance" {
+  bucket = aws_s3_bucket.COBI_clean_data_2023.id
+  key    = "Reflectance.csv" #path to the csv file
+  source = "./historical_copernicus/Reflectance.csv" #path to the csv file
+}
+
+resource "aws_s3_bucket_object" "SeaSurfaceTemperature" {
+  bucket = aws_s3_bucket.COBI_clean_data_2023.id
+  key    = "SeaSurfaceTemperature.csv" #path to the csv file
+  source = "./historical_copernicus/SeaSurfaceTemperature.csv" #path to the csv file
+}
+
+resource "aws_s3_bucket_object" "TotalSurfaceaAnd15mCurrent" {
+  bucket = aws_s3_bucket.COBI_clean_data_2023.id
+  key    = "TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
+  source = "./historical_copernicus/TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
+}
+
+resource "aws_s3_bucket_object" "Transparence" {
+  bucket = aws_s3_bucket.COBI_clean_data_2023.id
+  key    = "Transparence.csv" #path to the csv file
+  source = "./historical_copernicus/Transparence.csv" #path to the csv file
+}
+
+resource "aws_s3_bucket_object" "WaveHeight" {
+  bucket = aws_s3_bucket.COBI_clean_data_2023.id
+  key    = "WaveHeight.csv" #path to the csv file
+  source = "./historical_copernicus/WaveHeight.csv" #path to the csv file
+}
+###
+
 # upload Copernicus variable dictionary to S3
 resource "aws_s3_bucket_object" "copernicus_var_dict" {
   bucket = aws_s3_bucket.COBI_input_data_2023.id
