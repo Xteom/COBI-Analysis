@@ -28,7 +28,7 @@ def nc_to_csv(input_dir=input_dir, # PENDIENTE: hacer try catch
                 os.makedirs(destination_dir, exist_ok=True)
 
         
-        df.to_csv(os.path.join(destination_dir, filename[:-3]+".csv"))
+        df.to_csv(os.path.join(destination_dir, filename[:-3]+".csv")) # AGREGAR LIMPIEZA FINAL
 
 def main():
 
