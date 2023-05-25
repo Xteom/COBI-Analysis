@@ -76,10 +76,15 @@ def create_request(service_id, product_id, date, motu, directory_to, name, user,
         A dictionary with the parameters needed to download the data from the Copernicus API.
 
     ''' 
+    str_date = date.strftime('%Y-%m-%d')
+    year = str_date[:4]
+    month = str_date[5:7]
+    last_month = f'{int(month) - 1:02}' 
+    
     return {"service_id": service_id,
             "product_id": product_id,
-            "date_min": datetime.strptime('2017-01-01', '%Y-%m-%d').date(),
-            "date_max": datetime.strptime(date, '%Y-%m-%d').date(),
+            "date_min": datetime.strptime(f'{year}-{last_month}-01', '%Y-%m-%d').date(),
+            "date_max": date.date(),
             "longitude_min": -116.,
             "longitude_max": -113.,
             "latitude_min": 26.,
@@ -93,7 +98,7 @@ def create_request(service_id, product_id, date, motu, directory_to, name, user,
             "pwd": password
             }
 file_path=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-destination_path=os.path.join(file_path, 'data', 'copernicus', 'raw')
+destination_path=os.path.join(file_path,'etl', 'data', 'copernicus', 'raw', 'last_month')
 
 def make_request(credentials,
                  file_path=file_path, 
@@ -109,15 +114,16 @@ def make_request(credentials,
     '''
 
     # Read the CSV file with the list of variables to download from the Copernicus API
-    var_dict_list = read_variable_list(file_path)
+    var_dict_list = read_variable_list(os.path.join(file_path, "infra", "copernicus_var_dict.csv"))
+    date = datetime.today()
 
     for dict in var_dict_list:
         try:
-            date = datetime.today().strftime('%Y-%m-%d')
+            
 
             # Construct a relative file path to the data directory
 
-            directory_to = os.path.join(destination_path, 'data', 'copernicus', 'raw')
+            directory_to = destination_path
             if not os.path.isdir(directory_to):
                 os.makedirs(directory_to, exist_ok=True)
 
