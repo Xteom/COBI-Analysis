@@ -7,13 +7,44 @@ from motu_util import motu_api
 import motuclient
 
 class MotuOptions:
-    def __init__(self, attrs: dict):
-        super(MotuOptions, self).__setattr__("attrs", attrs)
+    """
+    The MotuOptions class is a custom class that enables attribute setting and retrieval using dictionary-like syntax. 
+    It provides methods for initialization, attribute setting, and attribute retrieval. 
+    This class is designed to store and retrieve options or configurations in the form of key-value pairs.
+    """
 
-    def __setattr__(self, k, v):
+    def _init_(self, attrs: dict):
+        """
+        The class constructor that initializes a MotuOptions object.
+        It takes a dictionary, attrs, as an argument and sets it as the initial attribute dictionary.
+
+        Args:
+            attrs (dict): Initial attribute dictionary.
+        """
+        self.attrs = attrs
+
+    def setattr(self, k, v):
+        """
+        A method to set an attribute. It takes a key k and a value v as arguments and adds or updates the corresponding 
+        key-value pair in the attrs dictionary.
+
+        Args:
+            k: Key of the attribute.
+            v: Value of the attribute.
+        """
         self.attrs[k] = v
 
-    def __getattr__(self, k):
+    def getattr(self, k):
+        """
+        A method to get an attribute. It takes a key k as an argument and returns the value associated with that key 
+        in the attrs dictionary. If the key is not found, it returns None.
+
+        Args:
+            k: Key of the attribute.
+
+        Returns:
+            The value associated with the key, or None if the key doesn't exist.
+        """
         try:
             return self.attrs[k]
         except KeyError:
