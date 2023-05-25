@@ -3,7 +3,7 @@ import configparser
 from datetime import datetime
 import os
 import csv
-from motu_util import motu_api
+from motu_utils import motu_api
 import motuclient
 
 class MotuOptions:
@@ -109,7 +109,7 @@ def make_request(credentials,
     '''
 
     # Read the CSV file with the list of variables to download from the Copernicus API
-    var_dict_list = read_variable_list(file_path)
+    var_dict_list = read_variable_list(os.path.join(file_path, "infra", "copernicus_var_dict.csv"))
 
     for dict in var_dict_list:
         try:
