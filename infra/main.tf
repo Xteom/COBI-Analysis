@@ -49,24 +49,23 @@ resource "aws_s3_bucket_object" "layer_requests" {
   source = "./lambda_layers/layer_requests.zip" #path to the zip file
 }
 
-resource "aws_s3_bucket_object" "layer_xarray" {
-  bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
-  key    = "layer_xarray.zip" #path to the zip file
-  #source = "./lambda_layers/layer_xarray/python.zip" #path to the zip file
-  source = "./lambda-layer.zip"
-}
+# resource "aws_s3_bucket_object" "layer_xarray" {
+#   bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
+#   key    = "layer_xarray.zip" #path to the zip file
+#   source = "./lambda_layers/layer_xarray.zip" #path to the zip file
+# }
 
-resource "aws_s3_bucket_object" "layer_motu" {
-  bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
-  key    = "layer_motu.zip" #path to the zip file
-  source = "./lambda_layers/layer_motu.zip" #path to the zip file
-}
+# resource "aws_s3_bucket_object" "layer_motu" {
+#   bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
+#   key    = "layer_motu.zip" #path to the zip file
+#   source = "./lambda_layers/layer_motu.zip" #path to the zip file
+# }
 
-resource "aws_s3_bucket_object" "layer_numpy" {
-  bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
-  key    = "layer_numpy.zip" #path to the zip file
-  source = "./lambda_layers/layer_numpy/python.zip" #path to the zip file
-}
+# resource "aws_s3_bucket_object" "layer_numpy" {
+#   bucket = aws_s3_bucket.COBI_lambda_layers_2023.id
+#   key    = "layer_numpy.zip" #path to the zip file
+#   source = "./lambda_layers/layer_numpy/python.zip" #path to the zip file
+# }
 
 ###
 
@@ -80,35 +79,53 @@ resource "aws_lambda_layer_version" "layer_requests" {
 
 }
 
-resource "aws_lambda_layer_version" "layer_xarray" {
-  layer_name = "layer_xarray"
-  s3_bucket  = "cobi-lambda-layers-2023"
-  s3_key     = "layer_xarray.zip"
-  compatible_runtimes = ["python3.8"]
-  description = "Python layer for x86_64 architecture and Python 3.8" 
+# resource "aws_lambda_layer_version" "layer_xarray" {
+#   layer_name = "layer_xarray"
+#   s3_bucket  = "cobi-lambda-layers-2023"
+#   s3_key     = "layer_xarray.zip"
+#   compatible_runtimes = ["python3.8"]
+#   description = "Python layer for x86_64 architecture and Python 3.8" 
 
-}
+# }
   
-resource "aws_lambda_layer_version" "layer_motu" {
-  layer_name = "layer_motu"
-  s3_bucket  = "cobi-lambda-layers-2023"
-  s3_key     = "layer_motu.zip"
-  compatible_runtimes = ["python3.8"]
-  description = "Python layer for x86_64 architecture and Python 3.8"
+# resource "aws_lambda_layer_version" "layer_motu" {
+#   layer_name = "layer_motu"
+#   s3_bucket  = "cobi-lambda-layers-2023"
+#   s3_key     = "layer_motu.zip"
+#   compatible_runtimes = ["python3.8"]
+#   description = "Python layer for x86_64 architecture and Python 3.8"
 
-}
+# }
 
-resource "aws_lambda_layer_version" "layer_numpy" {
-  layer_name = "layer_numpy"
-  s3_bucket  = "cobi-lambda-layers-2023"
-  s3_key = "layer_numpy.zip"
-  compatible_runtimes = ["python3.8"]
-  description = "Python layer for x86_64 architecture and Python 3.8"
+# resource "aws_lambda_layer_version" "layer_numpy" {
+#   layer_name = "layer_numpy"
+#   s3_bucket  = "cobi-lambda-layers-2023"
+#   s3_key = "layer_numpy.zip"
+#   compatible_runtimes = ["python3.8"]
+#   description = "Python layer for x86_64 architecture and Python 3.8"
   
 }
 ###
 
+# Lambdas
+# resource "aws_lambda_function" "from_csv_to_parquet" {
+#   filename      = "./lambda_code/lambda_function.zip"
+#   function_name = "from_csv_to_parquet"
+#   role          = aws_iam_role.lambda_exec.arn
+#   handler       = "lambda_function.lambda_handler"
+#   runtime       = "python3.8"
+#   layers        = ["arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python38:6",aws_lambda_layer_version.libraries_s3_extras.arn]
+#   timeout       = 300
+#   memory_size   = 512
 
+#   environment {
+#     variables = {
+#       INPUT_BUCKET  = ""
+#       OUTPUT_BUCKET = ""
+#     }
+#   }
+  
+# }
 
 
 
