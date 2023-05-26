@@ -19,3 +19,7 @@ python -m load.copernicus_load
 python -m load.globcolour_load
 
 echo "Done."
+
+# Load the data from data/copericus/processed into the s3 bucket
+echo "Loading data into s3 bucket..."
+aws s3 cp data/copericus/processed s3://cobi-clean-data-2023/copernicus/processed --recursive
