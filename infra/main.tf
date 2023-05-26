@@ -32,6 +32,11 @@ resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
   bucket = "cobi-lambda-layers-2023"
   acl    = "private"
 }
+
+resource "aws_s3_bucket" "COBI_arribos_2023" {
+  bucket = "cobi-arribos-2023"
+  acl    = "private"
+}
 ###
 
 # upload Copernicus historical data to S3
