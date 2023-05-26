@@ -11,3 +11,5 @@ infra/historical_copernicus/Transparence.csv
 infra/historical_copernicus/TotalSurfaceaAnd15mCurrent.csv
 infra/historical_copernicus/SeaSurfaceTemperature.csv
 infra/historical_copernicus/WaveHeight.csv
+infra/.terraform/providers/registry.terraform.io/hashicorp/aws/5.0.0/windows_amd64/terraform-provider-aws_v5.0.0_x5.exe
+infra/.terraform/providers/registry.terraform.io/hashicorp/null/3.2.1/windows_amd64/terraform-provider-null_v3.2.1_x5.exe
