@@ -37,43 +37,43 @@ resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
 # upload Copernicus historical data to S3
 resource "aws_s3_object" "BioGeoChemicalOptics" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "BioGeoChemicalOptics.csv" #path to the csv file
+  key    = "/BioGeoChemicalOptics/BioGeoChemicalOptics.csv" #path to the csv file
   source = "./historical_copernicus/BioGeoChemicalOptics.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "Plankton" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "Plankton.csv" #path to the csv file
+  key    = "/Plankton/Plankton.csv" #path to the csv file
   source = "./historical_copernicus/Plankton.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "Reflectance" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "Reflectance.csv" #path to the csv file
+  key    = "/Reflectance/Reflectance.csv" #path to the csv file
   source = "./historical_copernicus/Reflectance.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "SeaSurfaceTemperature" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "SeaSurfaceTemperature.csv" #path to the csv file
+  key    = "/SeaSurfaceTemperature/SeaSurfaceTemperature.csv" #path to the csv file
   source = "./historical_copernicus/SeaSurfaceTemperature.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "TotalSurfaceaAnd15mCurrent" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
+  key    = "/TotalSurfaceaAnd15mCurrent/TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
   source = "./historical_copernicus/TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "Transparence" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "Transparence.csv" #path to the csv file
+  key    = "/Transparence/Transparence.csv" #path to the csv file
   source = "./historical_copernicus/Transparence.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "WaveHeight" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "WaveHeight.csv" #path to the csv file
+  key    = "/WaveHeight/WaveHeight.csv" #path to the csv file
   source = "./historical_copernicus/WaveHeight.csv" #path to the csv file
 }
 ###
@@ -176,7 +176,84 @@ resource "aws_lambda_layer_version" "layer_requests" {
 # }
 ###
 
+# IAM
+
+resource "aws_iam_role" "lambda_exec" {
+  name = "lambda_exec_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { Service = "lambda.amazonaws.com" }
+        Action    = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+resource "aws_iam_policy" "s3_access_policy" {
+  name = "s3_access_policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ]
+        Effect   = "Allow"
+        Resource = [
+          "arn:aws:s3:::cobi-athena-results-2023/*",
+          "arn:aws:s3:::cobi-clean-data-2023/*",
+          "arn:aws:s3:::cobi-input-data-2023/*",
+          "arn:aws:s3:::cobi-landing-zone-2023/*",
+          "arn:aws:s3:::cobi-model-2023/*"
+          
+        ]
+      }
+    ]
+  })
+}
+resource "aws_cloudwatch_event_rule" "lambda_trigger" {
+  name        = "monthly-lambda-trigger"
+  description = "Trigger Lambda function once a month"
+
+  schedule_expression = "cron(0 0 1 * ? *)"  # Runs at 00:00 UTC on the 1st day of every month
+}
+
+resource "aws_cloudwatch_event_target" "lambda_target" {
+  rule      = aws_cloudwatch_event_rule.lambda_trigger.name
+  target_id = "copernicus_extract_lambda"
+  arn       = aws_lambda_function.copernicus_extract_lambda.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_role_policy_attachment" {
+  policy_arn = aws_iam_policy.s3_access_policy.arn
+  role       = aws_iam_role.lambda_exec.name
+}
+
+
 # Lambdas
+resource "aws_lambda_function" "copernicus_extract_lambda" {
+  function_name    = "copernicus_extract_lambda"
+  role             = aws_iam_role.lambda_exec.arn
+  package_type     = "Image"
+  image_uri        = "395849996067.dkr.ecr.us-east-2.amazonaws.com/copernicus_extract_lambda:latest"
+  memory_size      = 128
+  timeout          = 10
+
+  tracing_config {
+    mode = "Active"
+  }
+
+  lifecycle {
+    ignore_changes = [image_uri]
+  }
+}
+
 # resource "aws_lambda_function" "from_csv_to_parquet" {
 #   filename      = "./lambda_code/lambda_function.zip"
 #   function_name = "from_csv_to_parquet"
@@ -205,3 +282,97 @@ resource "aws_lambda_layer_version" "layer_requests" {
 #   handler = "copernicus_extract.lambda_handler"
 #   runtime = "python3.8"
 # }
+
+
+# Athena
+resource "aws_iam_role" "my_crawler_role" {
+  name = "cobi-crawler-role"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "glue.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+  # Agrega los permisos necesarios para el rol del crawler
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole",
+    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  ]
+}
+resource "aws_glue_catalog_database" "clean_data_db" {  
+  name = "athena_clean_data_db"
+}
+
+# Crawler for each folder
+resource "aws_glue_crawler" "BioGeoChemicalOptics_crawler" {
+  name         = "clean_data_crawler"
+  role         = aws_iam_role.my_crawler_role.arn 
+  database_name = aws_glue_catalog_database.clean_data_db.name
+  s3_target {
+    path = "s3://cobi-clean-data-2023/BioGeoChemicalOptics"
+  }
+}
+
+resource "aws_glue_crawler" "Reflectance_crawler" {
+  name         = "clean_data_crawler"
+  role         = aws_iam_role.my_crawler_role.arn 
+  database_name = aws_glue_catalog_database.clean_data_db.name
+  s3_target {
+    path = "s3://cobi-clean-data-2023/Reflectance"
+  }
+}
+
+resource "aws_glue_crawler" "SeaSurfaceTemperature_crawler" {
+  name         = "clean_data_crawler"
+  role         = aws_iam_role.my_crawler_role.arn 
+  database_name = aws_glue_catalog_database.clean_data_db.name
+  s3_target {
+    path = "s3://cobi-clean-data-2023/SeaSurfaceTemperature"
+  }
+}
+
+resource "aws_glue_crawler" "TotalSurfaceaAnd15mCurrent_crawler" {
+  name         = "clean_data_crawler"
+  role         = aws_iam_role.my_crawler_role.arn 
+  database_name = aws_glue_catalog_database.clean_data_db.name
+  s3_target {
+    path = "s3://cobi-clean-data-2023/TotalSurfaceaAnd15mCurrent"
+  }
+}
+
+resource "aws_glue_crawler" "Transparence_crawler" {
+  name         = "clean_data_crawler"
+  role         = aws_iam_role.my_crawler_role.arn 
+  database_name = aws_glue_catalog_database.clean_data_db.name
+  s3_target {
+    path = "s3://cobi-clean-data-2023/Transparence"
+  }
+}
+
+resource "aws_glue_crawler" "WaveHeight_crawler" {
+  name         = "clean_data_crawler"
+  role         = aws_iam_role.my_crawler_role.arn 
+  database_name = aws_glue_catalog_database.clean_data_db.name
+  s3_target {
+    path = "s3://cobi-clean-data-2023/WaveHeight"
+  }
+}
+
+resource "aws_glue_crawler" "Plankton_crawler" {
+  name         = "clean_data_crawler"
+  role         = aws_iam_role.my_crawler_role.arn 
+  database_name = aws_glue_catalog_database.clean_data_db.name
+  s3_target {
+    path = "s3://cobi-clean-data-2023/Plankton"
+  }
+}
+
+
