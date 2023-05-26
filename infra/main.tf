@@ -37,43 +37,43 @@ resource "aws_s3_bucket" "COBI_lambda_layers_2023" {
 # upload Copernicus historical data to S3
 resource "aws_s3_object" "BioGeoChemicalOptics" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "/BioGeoChemicalOptics/BioGeoChemicalOptics.csv" #path to the csv file
+  key    = "BioGeoChemicalOptics/BioGeoChemicalOptics.csv" #path to the csv file
   source = "./historical_copernicus/BioGeoChemicalOptics.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "Plankton" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "/Plankton/Plankton.csv" #path to the csv file
+  key    = "Plankton/Plankton.csv" #path to the csv file
   source = "./historical_copernicus/Plankton.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "Reflectance" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "/Reflectance/Reflectance.csv" #path to the csv file
+  key    = "Reflectance/Reflectance.csv" #path to the csv file
   source = "./historical_copernicus/Reflectance.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "SeaSurfaceTemperature" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "/SeaSurfaceTemperature/SeaSurfaceTemperature.csv" #path to the csv file
+  key    = "SeaSurfaceTemperature/SeaSurfaceTemperature.csv" #path to the csv file
   source = "./historical_copernicus/SeaSurfaceTemperature.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "TotalSurfaceaAnd15mCurrent" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "/TotalSurfaceaAnd15mCurrent/TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
+  key    = "TotalSurfaceaAnd15mCurrent/TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
   source = "./historical_copernicus/TotalSurfaceaAnd15mCurrent.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "Transparence" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "/Transparence/Transparence.csv" #path to the csv file
+  key    = "Transparence/Transparence.csv" #path to the csv file
   source = "./historical_copernicus/Transparence.csv" #path to the csv file
 }
 
 resource "aws_s3_object" "WaveHeight" {
   bucket = aws_s3_bucket.COBI_clean_data_2023.id
-  key    = "/WaveHeight/WaveHeight.csv" #path to the csv file
+  key    = "WaveHeight/WaveHeight.csv" #path to the csv file
   source = "./historical_copernicus/WaveHeight.csv" #path to the csv file
 }
 ###
@@ -313,7 +313,7 @@ resource "aws_glue_catalog_database" "clean_data_db" {
 
 # Crawler for each folder
 resource "aws_glue_crawler" "BioGeoChemicalOptics_crawler" {
-  name         = "clean_data_crawler"
+  name         = "bio_geo_chem_optics_crawler"
   role         = aws_iam_role.my_crawler_role.arn 
   database_name = aws_glue_catalog_database.clean_data_db.name
   s3_target {
@@ -322,7 +322,7 @@ resource "aws_glue_crawler" "BioGeoChemicalOptics_crawler" {
 }
 
 resource "aws_glue_crawler" "Reflectance_crawler" {
-  name         = "clean_data_crawler"
+  name         = "reflectance_crawler"
   role         = aws_iam_role.my_crawler_role.arn 
   database_name = aws_glue_catalog_database.clean_data_db.name
   s3_target {
@@ -331,7 +331,7 @@ resource "aws_glue_crawler" "Reflectance_crawler" {
 }
 
 resource "aws_glue_crawler" "SeaSurfaceTemperature_crawler" {
-  name         = "clean_data_crawler"
+  name         = "sea_surf_temp_crawler"
   role         = aws_iam_role.my_crawler_role.arn 
   database_name = aws_glue_catalog_database.clean_data_db.name
   s3_target {
@@ -340,7 +340,7 @@ resource "aws_glue_crawler" "SeaSurfaceTemperature_crawler" {
 }
 
 resource "aws_glue_crawler" "TotalSurfaceaAnd15mCurrent_crawler" {
-  name         = "clean_data_crawler"
+  name         = "tot_surf_and_curr_crawler"
   role         = aws_iam_role.my_crawler_role.arn 
   database_name = aws_glue_catalog_database.clean_data_db.name
   s3_target {
@@ -349,7 +349,7 @@ resource "aws_glue_crawler" "TotalSurfaceaAnd15mCurrent_crawler" {
 }
 
 resource "aws_glue_crawler" "Transparence_crawler" {
-  name         = "clean_data_crawler"
+  name         = "transparence_crawler"
   role         = aws_iam_role.my_crawler_role.arn 
   database_name = aws_glue_catalog_database.clean_data_db.name
   s3_target {
@@ -358,7 +358,7 @@ resource "aws_glue_crawler" "Transparence_crawler" {
 }
 
 resource "aws_glue_crawler" "WaveHeight_crawler" {
-  name         = "clean_data_crawler"
+  name         = "wave_height_crawler"
   role         = aws_iam_role.my_crawler_role.arn 
   database_name = aws_glue_catalog_database.clean_data_db.name
   s3_target {
@@ -367,7 +367,7 @@ resource "aws_glue_crawler" "WaveHeight_crawler" {
 }
 
 resource "aws_glue_crawler" "Plankton_crawler" {
-  name         = "clean_data_crawler"
+  name         = "Plankton_crawler"
   role         = aws_iam_role.my_crawler_role.arn 
   database_name = aws_glue_catalog_database.clean_data_db.name
   s3_target {
