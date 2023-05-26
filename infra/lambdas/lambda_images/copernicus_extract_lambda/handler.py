@@ -109,10 +109,15 @@ def create_request(service_id, product_id, date, motu, directory_to, name, user,
         A dictionary with the parameters needed to download the data from the Copernicus API.
 
     ''' 
+    str_date = date.strftime('%Y-%m-%d')
+    year = str_date[:4]
+    month = str_date[5:7]
+    last_month = f'{int(month) - 1:02}' 
+    
     return {"service_id": service_id,
             "product_id": product_id,
-            "date_min": datetime.strptime('2017-01-01', '%Y-%m-%d').date(),
-            "date_max": datetime.strptime(date, '%Y-%m-%d').date(),
+            "date_min": datetime.strptime(f'{year}-{last_month}-01', '%Y-%m-%d').date(),
+            "date_max": date.date(),
             "longitude_min": -116.,
             "longitude_max": -113.,
             "latitude_min": 26.,
@@ -125,12 +130,13 @@ def create_request(service_id, product_id, date, motu, directory_to, name, user,
             "user": user,
             "pwd": password
             }
-file_path=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-destination_path=os.path.join(file_path, 'data', 'copernicus', 'raw')
+
+input_file = 's3://cobi-input-data-2023/copernicus_var_dict.csv'
+output_bucket = 's3://cobi-landing-zone-2023'
 
 def make_request(credentials,
-                 file_path=file_path, 
-                 destination_path=destination_path):
+                 file_path=input_file, 
+                 destination_path=output_bucket):
     '''
     Creates a request with the parameters needed to download the data from the Copernicus API.
 
@@ -150,7 +156,7 @@ def make_request(credentials,
 
             # Construct a relative file path to the data directory
 
-            directory_to = os.path.join(destination_path, 'data', 'copernicus', 'raw')
+            directory_to = os.path.join(destination_path)
             if not os.path.isdir(directory_to):
                 os.makedirs(directory_to, exist_ok=True)
 
@@ -171,32 +177,19 @@ def make_request(credentials,
         except Exception as e:
             print(e)
 
-s3 = boto3.client('s3')
-s3_resource = boto3.resource('s3')
 
-input_bucket = 'COBI-input-data-2023'
-output_bucket = 'COBI-landing-zone-2023'
 
 def handler(event, context):
-
-    # Obtener la información del archivo
-    bucket = event['Records'][0]['s3']['bucket']['name']
-    key = event['Records'][0]['s3']['object']['key']
-
-    print (bucket)
-    print (key)
-
-    if bucket != output_bucket:
-        # Si el evento no es para el bucket de destino configurado, no hacer nada
-        print(f"El evento no es para el bucket de destino configurado: {output_bucket}")
-        return
     
     credentials = read_credentials()
-    make_request(credentials, input_bucket, output_bucket)
+    make_request(credentials, input_file, output_bucket)
 
     return {
         'statusCode': 200,
         'body': json.dumps('Copernicus Extract Lambda executed successfully!')
     }
 
-   
+if __name__ == "__main__":
+    handler(None, None)
+
+
